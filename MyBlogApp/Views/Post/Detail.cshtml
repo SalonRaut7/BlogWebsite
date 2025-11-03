@@ -1,0 +1,139 @@
+@model Post
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<style>
+    .content-wrapper {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        font-family: sans-serif;
+    }
+    .feature-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+</style>
+
+@* Show Edit/Delete buttons only if user is Admin OR owns this post *@
+@{
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var canEdit = User.IsInRole("Admin") || (Model.ApplicationUserId == currentUserId);
+}
+
+@if (canEdit)
+{
+    <div class="text-end">
+        <a class="btn btn-secondary my-3" asp-action="Edit" asp-controller="Post" asp-route-id="@Model.Id">Edit Post</a>
+        <a class="btn btn-danger mx-3 my-3" asp-action="Delete" asp-controller="Post" asp-route-id="@Model.Id">Delete Post</a>
+    </div>
+}
+
+<div class="content-wrapper">
+    <h1>@Model.Title</h1>
+    <p><span class="badge bg-primary">By:</span>@Model.Author | <span class="badge bg-primary">Published on:</span> @Model.PublishedDate.ToString("MMMM dd, yyyy")</p>
+    <p><span class="badge bg-secondary">Category:</span> @Model.Category.Name</p>
+    <img src="@Model.FeatureImagePath" alt="@Model.Title" class="feature-image"/>
+    <hr />
+    <div>@Html.Raw(Model.Content)</div>
+    <hr />
+    @if(Model.Comments.Any())
+    {
+        <div id="commentSection">
+        <h4>Comments</h4>
+            @foreach(var comment in Model.Comments)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@comment.UserName</h5>
+                        <p class="card-text text-muted">@comment.CommentDate.ToString("MMMM dd, yyyy")</p>
+                        <p class="card-text">@comment.Content</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else{
+        <p class="text-muted">No comments yet. Be the first to comment!</p>
+    }
+    
+   @* Only show comment form if user is logged in *@
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h4>Add a Comment</h4>
+        <form id="commentForm">
+            <div class="form-group mb-3">
+                <label for="Content">Comment</label>
+                <textarea id="Content" name="Content" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2 p-2 rounded">Submit Comment</button>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            <p class="mb-0">Please <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">login</a> to add a comment.</p>
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#commentForm').on('submit', function(event){
+                event.preventDefault();
+
+                var content = $("#Content").val().trim();
+                var postId = @Model.Id;
+
+                if (!content) {
+                    alert("Please write a comment.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("AddComment", "Post")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        UserName: '@User.Identity.Name', 
+                        Content: content,
+                        PostId: postId
+                    }),
+                    success: function(response){
+                        $("#Content").val(''); 
+
+                        // If no comments section exists, create it
+                        if ($('#commentSection').length === 0) {
+                            $('h4:contains("Add a Comment")').before('<div id="commentSection"><h4>Comments</h4></div>');
+                        }
+
+                        // Remove "no comments" message if exists
+                        $(".text-muted:contains('No comments yet')").remove();
+
+                        let newComment = $(`
+                            <div class="card mb-3 shadow-sm" style="display:none;">
+                                <div class="card-body">
+                                    <h5 class="card-title">${response.userName}</h5>
+                                    <p class="card-text text-muted">${response.commentDate}</p>
+                                    <p class="card-text">${response.content}</p>
+                                </div>
+                            </div>
+                        `);
+                        $('#commentSection').append(newComment);
+                        newComment.fadeIn(400);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error adding comment:", error);
+                        alert("Something went wrong while adding your comment. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+}

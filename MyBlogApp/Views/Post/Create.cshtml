@@ -1,0 +1,118 @@
+@model PostViewModel
+@{
+    ViewData["Title"] = "Create Post";
+}
+
+<style>
+    .content-wrapper {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        font-family: sans-serif;
+    }
+    #editor {
+        min-height: 300px;
+        background: white;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-6">
+            <h2>@ViewData["Title"]</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a class="btn btn-secondary mt-1" asp-action="Index" asp-controller="Post">Back to List</a>
+        </div>
+    </div>
+    <hr />
+    
+    <form asp-action="Create" asp-controller="Post" method="post" enctype="multipart/form-data" id="postForm">
+        <div class="validation-summary">
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label asp-for="Post.Title"></label>
+            <input asp-for="Post.Title" class="form-control" />
+            <span asp-validation-for="Post.Title" class="text-danger"></span>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label asp-for="Post.CategoryId"></label>
+            <select asp-for="Post.CategoryId" class="form-control" asp-items="Model.Categories">
+                <option value="">Select Category</option>
+            </select>
+            <span asp-validation-for="Post.CategoryId" class="text-danger"></span>
+        </div>      
+        <div class="form-group mb-3">
+            <label asp-for="Post.Content"></label>
+            <div id="editor"></div>
+            <input type="hidden" asp-for="Post.Content" id="contentInput" />
+            <span asp-validation-for="Post.Content" class="text-danger"></span>
+        </div>
+        
+        <div class="form-group mb-3">
+            <label asp-for="FeatureImage"></label>
+            <input asp-for="FeatureImage" type="file" class="form-control" accept=".jpg,.jpeg,.png" />
+            <span asp-validation-for="FeatureImage" class="text-danger"></span>
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-1">Create</button>
+        <a class="btn btn-secondary mt-1" asp-action="Index" asp-controller="Post">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    
+    <script>
+        // Initialize Quill editor
+        const quill = new Quill('#editor', { 
+            theme: 'snow',
+            placeholder: 'Write your blog post content here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'header': 1 }, { 'header': 2 }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['clean'],
+                    ['link', 'image']
+                ]
+            }
+        });
+        
+        const contentInput = document.getElementById('contentInput');
+        const form = document.getElementById('postForm');
+        
+        // Update hidden input when form is submitted
+        form.addEventListener('submit', function(e) {
+            // Get Quill content and set it to hidden input
+            const content = quill.root.innerHTML;
+            contentInput.value = content;
+            
+            // Check if content is empty (only HTML tags, no actual text)
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            const textContent = tempDiv.textContent || tempDiv.innerText || '';
+            
+            if (textContent.trim().length === 0) {
+                e.preventDefault();
+                alert('Please write some content for your blog post.');
+                return false;
+            }
+        });
+        // Update hidden input on text change
+        quill.on('text-change', function() {
+            contentInput.value = quill.root.innerHTML;
+        });
+    </script>
+}

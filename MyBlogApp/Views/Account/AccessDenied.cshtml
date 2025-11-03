@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Access Denied
+                </h2>
+            </div>
+            <div class="card-body text-center">
+                <div class="my-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-lock-fill text-danger" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+                
+                <h4 class="text-danger mb-3">You don't have permission to access this page</h4>
+                
+                <p class="text-muted mb-4">
+                    This page requires special permissions that your account doesn't have. 
+                    If you believe this is an error, please contact an administrator.
+                </p>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <a asp-action="Index" asp-controller="Post" class="btn btn-primary">
+                        <i class="bi bi-house"></i> Go to Home
+                    </a>
+                    <a asp-action="Logout" asp-controller="Account" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
