@@ -1,3 +1,4 @@
+using Ganss.Xss;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyBlogApp.Data;
@@ -6,6 +7,8 @@ using MyBlogApp.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -69,6 +72,19 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        context.Response.Headers["Pragma"] = "no-cache";
+        context.Response.Headers["Expires"] = "0";
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
 
 
 app.UseAuthentication();  // Who are you? (checks if user is logged in)

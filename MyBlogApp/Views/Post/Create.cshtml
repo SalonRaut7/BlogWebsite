@@ -16,7 +16,7 @@
     }
 </style>
 
-<div class="content-wrapper">
+<div class="content-wrapper reveal-on-load">
     <div class="row">
         <div class="col-6">
             <h2>@ViewData["Title"]</h2>
@@ -56,6 +56,12 @@
             <label asp-for="FeatureImage"></label>
             <input asp-for="FeatureImage" type="file" class="form-control" accept=".jpg,.jpeg,.png" />
             <span asp-validation-for="FeatureImage" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="TagInput" class="form-label">Tags</label>
+            <input asp-for="TagInput" class="form-control" placeholder="technology, design, csharp" />
+            <small class="text-muted">Comma-separated tags, up to 8.</small>
         </div>
         
         <button type="submit" class="btn btn-primary mt-1">Create</button>

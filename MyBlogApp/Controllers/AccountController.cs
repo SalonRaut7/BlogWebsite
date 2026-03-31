@@ -84,7 +84,7 @@ namespace MyBlogApp.Controllers
                     return View(model);
                 }
                 var result = await _signInManager.PasswordSignInAsync(
-                    user.UserName,         
+                    user,
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: true

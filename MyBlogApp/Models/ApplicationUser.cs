@@ -12,9 +12,9 @@ namespace MyBlogApp.Models
     public class ApplicationUser : IdentityUser
     {
         // Custom properties as:
-        public DateTime RegisteredDate { get; set; } = DateTime.Now;
+        public DateTime RegisteredDate { get; set; } = DateTime.UtcNow;
         
         // Navigation property - to track which posts this user created
-        public ICollection<Post>? Posts { get; set; }
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
     }
 }

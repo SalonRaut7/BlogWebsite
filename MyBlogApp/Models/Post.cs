@@ -12,13 +12,13 @@ namespace MyBlogApp.Models
         
         [Required(ErrorMessage = "The title is required")]
         [MaxLength(400, ErrorMessage = "The title cannot exceed 400 characters")]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "The content is required")]
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
         
         [MaxLength(100, ErrorMessage = "The author cannot exceed 100 characters")]
-        public string? Author { get; set; }  
+        public string? Author { get; set; }
         
         // Foreign key to track which user created this post
         [ValidateNever]
@@ -29,19 +29,25 @@ namespace MyBlogApp.Models
         public ApplicationUser? ApplicationUser { get; set; }
         
         [ValidateNever]
-        public string FeatureImagePath { get; set; }
+        public string FeatureImagePath { get; set; } = string.Empty;
         
         [DataType(DataType.Date)]
-        public DateTime PublishedDate { get; set; } = DateTime.Now;
+        public DateTime PublishedDate { get; set; } = DateTime.UtcNow;
         
         [ForeignKey("Category")]
         [DisplayName("Category")]
         public int CategoryId { get; set; }
         
         [ValidateNever]
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
         
         [ValidateNever]
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        [ValidateNever]
+        public ICollection<PostTag> PostTags { get; set; } = new List<PostTag>();
+
+        [ValidateNever]
+        public ICollection<PostLike> Likes { get; set; } = new List<PostLike>();
     }
 }

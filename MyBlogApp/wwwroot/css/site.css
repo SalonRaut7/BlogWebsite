@@ -2,6 +2,19 @@ html {
   font-size: 14px;
 }
 
+:root {
+  --page-bg: #f5f3ee;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --accent: #d97706;
+  --accent-strong: #b45309;
+  --border: rgba(31, 41, 55, 0.12);
+  --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+  --radius: 20px;
+}
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -15,10 +28,233 @@ html {
 html {
   position: relative;
   min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   margin-bottom: 60px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(217, 119, 6, 0.12), transparent 30%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.10), transparent 26%),
+    linear-gradient(180deg, #faf8f4 0%, var(--page-bg) 100%);
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.nav-link {
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--accent) !important;
+}
+
+.card,
+.content-wrapper,
+.alert,
+.form-control,
+.form-select,
+.modal-content {
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow);
+}
+
+.card,
+.content-wrapper {
+  border-radius: var(--radius);
+}
+
+.card {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
+}
+
+.btn {
+  border-radius: 999px;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary,
+.bg-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--accent-strong) !important;
+  border-color: var(--accent-strong) !important;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(217, 119, 6, 0.18);
+  border-color: rgba(217, 119, 6, 0.6);
+}
+
+.content-wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  margin: 0 auto;
+}
+
+.post-hero {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 250, 240, 0.88));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 2rem;
+}
+
+.post-hero__meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.post-content {
+  font-size: 1.06rem;
+  line-height: 1.85;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.comment-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.comment-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.comment-card:hover {
+  transform: translateY(-2px);
+}
+
+.comment-actions .btn {
+  padding-inline: 0.8rem;
+}
+
+.reveal-on-load {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.reveal-on-load.is-visible {
+  animation: revealFade 520ms ease forwards;
+}
+
+@keyframes revealFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .content-wrapper,
+  .post-hero {
+    padding: 1.25rem;
+  }
+
+  .post-content {
+    font-size: 1rem;
+  }
+}
+
+.feature-image,
+.card-img-top {
+  border-radius: 0;
+}
+
+.post-detail-image {
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  object-position: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 0.5rem;
+}
+
+#editor {
+  min-height: 320px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+#commentSection .card,
+.card.shadow-sm {
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06) !important;
+}
+
+footer {
+  background: transparent;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--accent-strong);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

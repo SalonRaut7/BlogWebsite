@@ -1,0 +1,67 @@
+@model MyBlogApp.Models.ViewModels.AdminUsersViewModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="content-wrapper reveal-on-load">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Manage Users</h1>
+            <p class="text-muted mb-0">View registered users and delete accounts when needed.</p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Registered</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@user.UserName</div>
+                            @if (user.IsCurrentUser)
+                            {
+                                <small class="text-muted">Current account</small>
+                            }
+                        </td>
+                        <td>@user.Email</td>
+                        <td>@string.Join(", ", user.Roles)</td>
+                        <td>@user.RegisteredDate.ToString("MMM dd, yyyy")</td>
+                        <td class="text-end">
+                            @if (!user.IsCurrentUser)
+                            {
+                                <form asp-action="DeleteUser" asp-controller="Admin" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?');">Delete</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Protected</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -15,6 +15,9 @@ namespace MyBlogApp.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<PostTag> PostTags { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,6 +82,51 @@ namespace MyBlogApp.Data
                     ApplicationUserId = null
                 }
             );
+
+            modelBuilder.Entity<Tag>()
+                .HasIndex(tag => tag.Slug)
+                .IsUnique();
+
+            modelBuilder.Entity<PostTag>()
+                .HasKey(postTag => new { postTag.PostId, postTag.TagId });
+
+            modelBuilder.Entity<PostTag>()
+                .HasOne(postTag => postTag.Post)
+                .WithMany(post => post.PostTags)
+                .HasForeignKey(postTag => postTag.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PostTag>()
+                .HasOne(postTag => postTag.Tag)
+                .WithMany(tag => tag.PostTags)
+                .HasForeignKey(postTag => postTag.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PostLike>()
+                .HasIndex(postLike => new { postLike.PostId, postLike.ApplicationUserId })
+                .IsUnique();
+
+            modelBuilder.Entity<PostLike>()
+                .HasOne(postLike => postLike.Post)
+                .WithMany(post => post.Likes)
+                .HasForeignKey(postLike => postLike.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PostLike>()
+                .HasOne(postLike => postLike.ApplicationUser)
+                .WithMany()
+                .HasForeignKey(postLike => postLike.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(comment => comment.ApplicationUser)
+                .WithMany()
+                .HasForeignKey(comment => comment.ApplicationUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Comment>()
+                .Property(comment => comment.IsEdited)
+                .HasDefaultValue(false);
         }
     }
 }
